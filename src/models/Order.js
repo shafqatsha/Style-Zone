@@ -33,6 +33,6 @@ const ORDER_SCHEMA_PROTO_ = {
     }
 }
 
-const orderSchema = new Schema(ORDER_SCHEMA_PROTO_);
+const orderSchema = new Schema(ORDER_SCHEMA_PROTO_, { timestamps: true });
 
 export default model('Order', orderSchema);

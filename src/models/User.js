@@ -17,6 +17,15 @@ const USER_SCHEMA_PROTO_ = {
   },
   password: { type: String, required: true, minLength: 8, trim: true },
   user_type: { type: String, required: true },
+  access_type: {
+    type: [String],
+    validate: {
+      validator: v => {
+        return Array.isArray(v) && v?.length > 0;
+      },
+      message:"Please provide at least one access type"
+    }
+  }
 };
 
 const CART_PROTO = {
@@ -30,7 +39,7 @@ const CART_PROTO = {
   ],
 };
 
-const userSchema = new Schema({ ...USER_SCHEMA_PROTO_, cart: CART_PROTO });
+const userSchema = new Schema({ ...USER_SCHEMA_PROTO_, cart: CART_PROTO }, { timestamps: true });
 
 userSchema.methods.addToCart = function (product) {
   try {

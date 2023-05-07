@@ -61,7 +61,7 @@ const PRODUCT_SCHEMA_PROTO_ = {
 
 const productSchema = new Schema({
     ...PRODUCT_SCHEMA_PROTO_
-})
+}, { timestamps: true })
 
 export default mongoose.model('Product', productSchema);
 export {PRODUCT_SCHEMA_PROTO_}

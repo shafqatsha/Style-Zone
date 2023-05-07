@@ -7,6 +7,7 @@ import User from "./src/models/User.js";
 import productRoutes from "./src/routes/product.js";
 import orderRoutes from "./src/routes/order.js";
 import usersRoutes from "./src/routes/users.js";
+import adminRoutes from "./src/routes/admin.js";
 
 //routes
 
@@ -24,6 +25,16 @@ app.use((req, res, next) => {
 app.use("/product", productRoutes);
 app.use("/order", orderRoutes);
 app.use("/users", usersRoutes);
+app.use("/admin", adminRoutes);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message, error: error.stack, data,  });
+});
+
 
 const PORT = process.env.PORT || 3000;
 
