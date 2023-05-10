@@ -34,11 +34,13 @@ export const findAllProductsController = async (req, res) => {
     const products = await Product.find({})
       .skip((page - 1) * page_size)
       .limit(page_size);
+
+
     res.send({
       message: "Items fetched successfully",
       result: {
         previous_page_url,
-        next_page_url,
+        next_page_url: products.length ? next_page_url : null,
         totalItems,
         products,
       },

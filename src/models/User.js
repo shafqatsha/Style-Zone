@@ -16,12 +16,12 @@ const USER_SCHEMA_PROTO_ = {
     },
   },
   password: { type: String, required: true, minLength: 8, trim: true },
-  user_type: { type: String, required: true },
+  user_type: { type: String, required: true, default: 'customer' },
   access_type: {
     type: [String],
     validate: {
       validator: v => {
-        return Array.isArray(v) && v?.length > 0;
+        return Array.isArray(v) && v?.length > 0 && this.user_type !== 'customer';
       },
       message:"Please provide at least one access type"
     }
