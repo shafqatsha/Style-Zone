@@ -1,20 +1,34 @@
 import Product, { PRODUCT_SCHEMA_PROTO_ } from "../models/Product.js";
+import { handleError } from "../util/helpers.js";
 
-export const createProductController = async (req, res) => {
+export const createProductController = async (req, res, next) => {
   try {
     let productPayload = {};
     for (const productschemaprotoKey in PRODUCT_SCHEMA_PROTO_) {
       productPayload[productschemaprotoKey] = req.body[productschemaprotoKey];
     }
     productPayload.user_id = req.user._id;
+
+    if(!req.file){
+      return handleError({message: 'Please provide media file', code: 422, next});
+    }
+    console.log(req.file);
+  
+    // if(!req.body.sizes) {
+    //   return handleError({message: 'The product sizes field is required!!!', code: 422, next})
+    // }
+    // productPayload.sizes = JSON.parse(req.body.sizes);
+
     const product = new Product(productPayload);
+    
+
     await product.save();
     res.status(200).send({
       message: "Product created successfully",
       product,
     });
   } catch (error) {
-    throw error;
+    return handleError({error, next})
   }
 };
 

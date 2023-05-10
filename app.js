@@ -1,8 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
-//models
-import User from "./src/models/User.js";
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 //routes
 import productRoutes from "./src/routes/product.js";
 import orderRoutes from "./src/routes/order.js";
@@ -14,6 +13,10 @@ import adminRoutes from "./src/routes/admin.js";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/medias', express.static(path.join(__dirname, 'medias')));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

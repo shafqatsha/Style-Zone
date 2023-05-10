@@ -24,16 +24,20 @@ const PRODUCT_SCHEMA_PROTO_ = {
         type: String,
         required: true
     },
-    sizes: {
-        type: [{
-            size: {type: String, required: true},
-            quantity: {type: Number, required: true}
-        }],
-        validate: {
-            validator: v => Array.isArray(v) && v.length > 0,
-            message: props => `The sizes array can't be empty`
-        },
-    },
+
+    // sizes: {
+    //     type: [{
+    //         size: {type: String, required: true},
+    //         quantity: {type: Number, required: true}
+    //     }],
+    //     validate: {
+    //         validator: (v) => {
+    //             if(!v) return false;
+    //             return Array.isArray(v) && v.length > 0
+    //         },
+    //         message: props => `The sizes array can't be empty Or invalid value provided`
+    //     },
+    // },
     quality: {
         type: String,
         required: true

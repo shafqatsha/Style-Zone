@@ -1,4 +1,30 @@
 import {Router} from 'express';
+import multer from 'multer';
+
+
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'medias');
+    },
+    filename: (req, file, cb) => {
+      cb(null, new Date().toISOString() + '-' + file.originalname);
+    }
+  });
+  
+  const fileFilter = (req, file, cb) => {
+    if (
+      file.mimetype === 'image/png' ||
+      file.mimetype === 'image/jpg' ||
+      file.mimetype === 'image/jpeg'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  };
+  
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter })
+
 import {
     createProductController,
     singleProductController,
@@ -15,7 +41,7 @@ const router = Router();
 
 router.post('', auth, (req, res, next) => {
     hasAccess(req, res, next, ACCESS_TYPES.CREATE)
-}, createProductController);
+},upload.single('media'), createProductController);
 router.get('/',  findAllProductsController); // get all
 router.get('/:id', singleProductController); // get single
 router.put('/:id',(req, res, next) => {
