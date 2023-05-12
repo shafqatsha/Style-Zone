@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import multer from 'multer';
+const {Router} = require('express');
+const multer = require('multer');
 
 
 const fileStorage = multer.diskStorage({
@@ -7,7 +7,7 @@ const fileStorage = multer.diskStorage({
       cb(null, 'medias');
     },
     filename: (req, file, cb) => {
-      cb(null, new Date().toISOString() + '-' + file.originalname);
+      cb(null, Date.now() + '-' + file.originalname);
     }
   });
   
@@ -23,25 +23,23 @@ const fileStorage = multer.diskStorage({
     }
   };
   
-const upload = multer({ storage: fileStorage, fileFilter: fileFilter })
-
-import {
+const {
     createProductController,
     singleProductController,
     findAllProductsController,
     deleteProductController,
     updateProductController
-} from "../controllers/productController.js";
-import auth from '../middleware/auth.js';
-import hasAccess from '../middleware/hasAccess.js';
-import { ACCESS_TYPES } from '../util/constants.js';
+} = require("../controllers/productController.js");
+const auth = require('../middleware/auth.js');
+const hasAccess = require('../middleware/hasAccess.js');
+const { ACCESS_TYPES } = require('../util/constants.js');
 
 
 const router = Router();
 
 router.post('', auth, (req, res, next) => {
     hasAccess(req, res, next, ACCESS_TYPES.CREATE)
-},upload.single('media'), createProductController);
+},multer({ storage: fileStorage, fileFilter: fileFilter }).single('media'), createProductController);
 router.get('/',  findAllProductsController); // get all
 router.get('/:id', singleProductController); // get single
 router.put('/:id',(req, res, next) => {
@@ -53,4 +51,4 @@ router.delete('/:id', (req, res, next) => {
 
 
 
-export default router
+module.exports = router

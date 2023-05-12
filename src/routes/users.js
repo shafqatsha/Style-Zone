@@ -1,11 +1,11 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   userSignupController,
   userLoginController,
   fetchSingleUserController,
   userUpdateController,
-} from "../controllers/userController.js";
-import auth from "../middleware/auth.js";
+} = require("../controllers/userController.js");
+const auth = require("../middleware/auth.js");
 
 const router = Router();
 
@@ -17,4 +17,4 @@ router.put("/update/:id",auth, userUpdateController);
 
 router.get("/user/:id",auth, fetchSingleUserController);
 
-export default router;
+module.exports = router;

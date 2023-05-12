@@ -1,8 +1,8 @@
-import Order from "../models/Order.js";
-import Product from "../models/Product.js";
+const Order = require("../models/Order.js");
+const Product = require("../models/Product.js");
 
 
-export const createOrderController = async (req, res) => {
+exports.createOrderController = async (req, res) => {
     try {
         const orderPayload = req.body;
         let products = [];
@@ -33,7 +33,7 @@ export const createOrderController = async (req, res) => {
 }
 
 
-export const getOrdersController = async (req, res) => {
+exports.getOrdersController = async (req, res) => {
     try {
         const orders = await Order.find({}).populate('user').exec();
         res.status(200).send({

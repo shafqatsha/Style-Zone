@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+const jwt = require("jsonwebtoken");
+const {User} = require("../models/User.js");
 
-export default async (req, res, next) => {
+module.exports= async (req, res, next) => {
   let token = req.get("Authorization");
 
   if (token && token?.indexOf("Bearer") > -1) {

@@ -1,24 +1,24 @@
-import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 
 const {Schema} = mongoose;
 
-const PRODUCT_SCHEMA_PROTO_ = {
+ const PRODUCT_SCHEMA_PROTO_ = {
     name: {
         type: String,
         minLength: [3, 'Must be at least 3, got {VALUE}'],
         required: true
     },
-    type: {
-        type: String,
-        required: true
+    categories: {
+        type: [String],
+        required: false
     },
     color: {
         type: String,
-        required: true
+        required: false
     },
     season: {
         type: String,
-        required: true
+        required: false
     },
     description: {
         type: String,
@@ -38,6 +38,22 @@ const PRODUCT_SCHEMA_PROTO_ = {
     //         message: props => `The sizes array can't be empty Or invalid value provided`
     //     },
     // },
+    
+    medias: {
+        type: [{
+            media: {type: String, required: true},
+            media_url: {type: String, required: true}
+        }],
+        validate: {
+            validator: (v) => {
+                if(!v) return false;
+                return Array.isArray(v) && v.length > 0
+            },
+            message: props => `The medias field can't be empty Or invalid value provided`
+        },
+    },
+    
+
     quality: {
         type: String,
         required: true
@@ -67,5 +83,5 @@ const productSchema = new Schema({
     ...PRODUCT_SCHEMA_PROTO_
 }, { timestamps: true })
 
-export default mongoose.model('Product', productSchema);
-export {PRODUCT_SCHEMA_PROTO_}
+module.exports =  {Product: mongoose.model('Product', productSchema), PRODUCT_SCHEMA_PROTO_}
+// exports. = PRODUCT_SCHEMA_PROTO_

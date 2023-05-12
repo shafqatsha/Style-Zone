@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
+const bcrypt = require("bcryptjs");
 
-import { Schema, model } from "mongoose";
-import isEmail from "validator/lib/isEmail.js";
+const { Schema, model } = require("mongoose");
+const isEmail = require("validator/lib/isEmail.js");
 
 const USER_SCHEMA_PROTO_ = {
   first_name: { type: String, required: true },
@@ -98,5 +98,5 @@ userSchema.pre("save", function (cb) {
   });
 });
 
-export default model("User", userSchema);
-export { USER_SCHEMA_PROTO_ };
+exports.User = model("User", userSchema);
+exports.USER_SCHEMA_PROTO_ = USER_SCHEMA_PROTO_;

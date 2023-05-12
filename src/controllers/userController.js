@@ -1,10 +1,12 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-import User, { USER_SCHEMA_PROTO_ } from "../models/User.js";
-import { handleError } from "../util/helpers.js";
+const  { USER_SCHEMA_PROTO_ } = require("../models/User.js");
+const  {User} = require("../models/User.js");
+ 
+const { handleError } = "../util/helpers.js";
 
-export const userSignupController = async (req, res, next) => {
+exports.userSignupController = async (req, res, next) => {
   try {
     let userPayload = {};
     for (const key in USER_SCHEMA_PROTO_) {
@@ -39,7 +41,7 @@ export const userSignupController = async (req, res, next) => {
   }
 };
 
-export const userUpdateController = async (req, res, next) => {
+exports.userUpdateController = async (req, res, next) => {
   try {
     let user = {};
     if (req.user._id.toString() === req.params.id.toString()) {
@@ -75,7 +77,7 @@ export const userUpdateController = async (req, res, next) => {
   }
 };
 
-export const userLoginController = async (req, res, next) => {
+exports.userLoginController = async (req, res, next) => {
   try {
     if (!req.body.email) {
       const error = new Error({
@@ -122,7 +124,7 @@ export const userLoginController = async (req, res, next) => {
   }
 };
 
-export const fetchSingleUserController = async (req, res) => {
+exports.fetchSingleUserController = async (req, res) => {
   try {
     const _id = req.params.id;
     if (!_id) {

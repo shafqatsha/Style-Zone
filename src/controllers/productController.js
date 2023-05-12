@@ -1,7 +1,8 @@
-import Product, { PRODUCT_SCHEMA_PROTO_ } from "../models/Product.js";
-import { handleError } from "../util/helpers.js";
+const { Product } = require("../models/Product.js");
+const { PRODUCT_SCHEMA_PROTO_ } = require("../models/Product.js");
+const { handleError, paginate } = require("../util/helpers.js");
 
-export const createProductController = async (req, res, next) => {
+exports.createProductController = async (req, res, next) => {
   try {
     let productPayload = {};
     for (const productschemaprotoKey in PRODUCT_SCHEMA_PROTO_) {
@@ -9,18 +10,27 @@ export const createProductController = async (req, res, next) => {
     }
     productPayload.user_id = req.user._id;
 
-    if(!req.file){
-      return handleError({message: 'Please provide media file', code: 422, next});
+    if (!req.file) {
+      return handleError({
+        message: "Please provide media file",
+        code: 422,
+        next,
+      });
     }
     console.log(req.file);
-  
+    productPayload.medias = [
+      {
+        media: req.file.path,
+        media_url: process.env.BASE_URL + "/" + req.file.path,
+      },
+    ];
+
     // if(!req.body.sizes) {
     //   return handleError({message: 'The product sizes field is required!!!', code: 422, next})
     // }
     // productPayload.sizes = JSON.parse(req.body.sizes);
 
     const product = new Product(productPayload);
-    
 
     await product.save();
     res.status(200).send({
@@ -28,27 +38,23 @@ export const createProductController = async (req, res, next) => {
       product,
     });
   } catch (error) {
-    return handleError({error, next})
+    return handleError({ error, next });
   }
 };
 
-export const findAllProductsController = async (req, res) => {
+exports.findAllProductsController = async (req, res, next) => {
   try {
-    const baseURL = "http://localhost:3000/product?page=";
+
+    const baseURL = process.env.BASE_URL + "/product?page=";
     const totalItems = await Product.find({}).countDocuments();
     const page = req.query.page || 1;
     const page_size = req.query.page_size || 10;
 
-    const nextPage = +page + 1;
-    const next_page_url = totalItems > page_size ? baseURL + nextPage : null;
-    const prevPage = +page - 1;
-    const previous_page_url =
-      totalItems > page_size && page > 1 ? baseURL + prevPage : null;
+    const {next_page_url, previous_page_url} = paginate({baseURL, totalItems, page, page_size});
 
     const products = await Product.find({})
       .skip((page - 1) * page_size)
       .limit(page_size);
-
 
     res.send({
       message: "Items fetched successfully",
@@ -59,11 +65,11 @@ export const findAllProductsController = async (req, res) => {
         products,
       },
     });
-  } catch (e) {
-    res.status(402).send(e);
+  } catch (error) {
+    handleError({ error, code: 500, next });
   }
 };
-export const singleProductController = async (req, res) => {
+exports.singleProductController = async (req, res) => {
   try {
     const id = req.params.id;
     if (id) {
@@ -75,11 +81,11 @@ export const singleProductController = async (req, res) => {
     }
     return res.status(401).send("Please provide an id");
   } catch (e) {
-    res.status(402).send(e);
+    res.status(422).send(e);
   }
 };
 
-export const updateProductController = async (req, res) => {
+exports.updateProductController = async (req, res) => {
   try {
     const id = req.params.id;
     if (id) {
@@ -101,7 +107,7 @@ export const updateProductController = async (req, res) => {
   }
 };
 
-export const deleteProductController = async (req, res) => {
+exports.deleteProductController = async (req, res) => {
   try {
     const id = req.params.id;
     if (id) {

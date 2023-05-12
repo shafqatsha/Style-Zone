@@ -1,8 +1,7 @@
 
-import { handleError } from "../util/helpers.js";
-import auth from "./auth.js";
+const { handleError } = require("../util/helpers.js");
 
-export default async (req, res, next, _access) => {
+module.exports = async (req, res, next, _access) => {
   try {
     if(req.user.user_type === 'admin') return next();
     if (req.user.access_type.some((access) => access === _access)) {
