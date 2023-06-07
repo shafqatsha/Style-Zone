@@ -1,19 +1,19 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const  { USER_SCHEMA_PROTO_ } = require("../models/User.js");
-const  {User} = require("../models/User.js");
- 
-const { handleError } = "../util/helpers.js";
+const { USER_SCHEMA_PROTO_ } = require("../models/User.js");
+const { User } = require("../models/User.js");
+const { handleError } = require("../../src/util/helpers.js");
+
 
 exports.userSignupController = async (req, res, next) => {
   try {
+
     let userPayload = {};
     for (const key in USER_SCHEMA_PROTO_) {
-      if (req.body.hasOwnProperty.call(req.body, key)) {
-        userPayload[key] = req.body[key];
-      }
+      userPayload[key] = req.body[key];
     }
+    userPayload.image_url = req?.file?.path ?? null;
     const user = new User(userPayload);
     await user.validate();
 
@@ -33,11 +33,12 @@ exports.userSignupController = async (req, res, next) => {
     }
 
     await user.save();
-    res.status(201).send({ message: "Signup successful", user });
+    res.status(201).send({ message: "Signup Successful", user });
   } catch (error) {
     console.log(error);
-    error.statusCode = error.statusCode ?? 500;
-    next(error);
+
+    handleError({ error, code: 500, next  });
+
   }
 };
 
@@ -48,7 +49,7 @@ exports.userUpdateController = async (req, res, next) => {
       console.log("equals");
       user = req.user;
     } else {
-     console.log('not equals');
+      console.log('not equals');
       user = User.findById(req.params.id);
     }
     for (const key in USER_SCHEMA_PROTO_) {
@@ -80,36 +81,37 @@ exports.userUpdateController = async (req, res, next) => {
 exports.userLoginController = async (req, res, next) => {
   try {
     if (!req.body.email) {
-      const error = new Error({
+      handleError({
         message: "The email is required",
-      });
-      error.statusCode = 422;
-      next(error);
-    }
+        code: 422,
+        next,
+      })}
 
     if (!req.body.password) {
-      const error = new Error({
+       handleError({
         message: "The password is required",
-      });
-      error.statusCode = 422;
-      next(error);
+        code: 422,
+        next,
+      })
     }
 
     const user = await User.findByEmail(req.body.email);
-     
+
     if (!user) {
-      handleError({message:"Invalid email or password", code: 422,})
+      handleError({ message: "Invalid email or password", code: 422})
+      return;
     }
     const isMatched = await bcrypt.compare(req.body.password, user.password);
     if (!isMatched) {
-      handleError({message:"Invalid email or password", code: 500,})
+      handleError({ message: "Invalid email or password", code: 500})
+      return;
     }
     const token = jwt.sign(
       {
         email: user.email,
         user_id: user._id.toString(),
       },
-      "shafqat_-_sha_-_45",
+      process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
 
@@ -120,7 +122,7 @@ exports.userLoginController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    handleError({error, code: 500, next})
+    handleError({ error, code: 500, next })
   }
 };
 
@@ -132,6 +134,18 @@ exports.fetchSingleUserController = async (req, res) => {
     }
     const user = await User.findById(_id);
 
+    res.send({
+      message: "User fetched successfully",
+      user,
+    });
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+exports.fetchMeUserController = async (req, res) => {
+  try {
+    const user = req.user;
     res.send({
       message: "User fetched successfully",
       user,

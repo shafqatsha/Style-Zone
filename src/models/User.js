@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 
 const { Schema, model } = require("mongoose");
 const isEmail = require("validator/lib/isEmail.js");
+const { ACCESS_TYPES } = require("../util/constants");
 
 const USER_SCHEMA_PROTO_ = {
   first_name: { type: String, required: true },
@@ -16,6 +17,7 @@ const USER_SCHEMA_PROTO_ = {
     },
   },
   password: { type: String, required: true, minLength: 8, trim: true },
+
   user_type: { type: String, required: true, default: 'customer' },
   access_type: {
     type: [String],
@@ -23,8 +25,16 @@ const USER_SCHEMA_PROTO_ = {
       validator: v => {
         return Array.isArray(v) && v?.length > 0 && this.user_type !== 'customer';
       },
-      message:"Please provide at least one access type"
+      message: "Please provide at least one access type"
     }
+  },
+  // reset_password: {
+  //   token: String,
+  //   expiry_time: Date,
+  //   is_expired: Boolean
+  // },
+  image_url: {
+    type: String,
   }
 };
 
@@ -39,7 +49,7 @@ const CART_PROTO = {
   ],
 };
 
-const userSchema = new Schema({ ...USER_SCHEMA_PROTO_, cart: CART_PROTO }, { timestamps: true });
+const userSchema = new Schema({ ...USER_SCHEMA_PROTO_ }, { timestamps: true });
 
 userSchema.methods.addToCart = function (product) {
   try {

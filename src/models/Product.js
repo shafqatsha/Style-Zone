@@ -25,19 +25,19 @@ const {Schema} = mongoose;
         required: true
     },
 
-    // sizes: {
-    //     type: [{
-    //         size: {type: String, required: true},
-    //         quantity: {type: Number, required: true}
-    //     }],
-    //     validate: {
-    //         validator: (v) => {
-    //             if(!v) return false;
-    //             return Array.isArray(v) && v.length > 0
-    //         },
-    //         message: props => `The sizes array can't be empty Or invalid value provided`
-    //     },
-    // },
+    sizes: {
+        type: [{
+            size: {type: String, required: true},
+            quantity: {type: Number, required: true}
+        }],
+        validate: {
+            validator: (v) => {
+                if(!v) return false;
+                return Array.isArray(v) && v.length > 0
+            },
+            message: props => `The sizes array can't be empty Or invalid value provided ${props} `
+        },
+    },
     
     medias: {
         type: [{

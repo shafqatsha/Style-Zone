@@ -3,9 +3,9 @@ const {User} = require("../models/User.js");
 
 module.exports= async (req, res, next) => {
   let token = req.get("Authorization");
-
   if (token && token?.indexOf("Bearer") > -1) {
     token = token.split(" ")[1];
+ 
     try {
       const decodedToken = jwt.verify(token, "shafqat_-_sha_-_45");
       if (!decodedToken) {
